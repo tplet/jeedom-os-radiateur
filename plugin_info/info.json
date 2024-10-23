@@ -4,7 +4,7 @@
 	"description" : "Plugin de gestion des radiateurs électrique avec un écran de contrôle, le tout piloté par Tasmota",
 	"licence" : "Apache License Version 2.0",
 	"author" : "tplet",
-	"require" : "4.4",
+	"require" : "4.0",
 	"category" : "automation protocol",
 	"hasDependency" : false,
 	"hasOwnDeamon" : false,
