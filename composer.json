@@ -1,0 +1,12 @@
+{
+    "name": "tplet/jeedom-os-radiator",
+    "description": "Plugin de gestion des radiateurs électrique avec un écran de contrôle, le tout piloté par Tasmota",
+    "require": {
+    },
+    "authors": [
+        {
+            "name": "Thibault PLET",
+            "email": "thibault.plet@gmail.com"
+        }
+    ]
+}

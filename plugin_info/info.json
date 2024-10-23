@@ -1,0 +1,20 @@
+{
+	"id" : "OSRadiator",
+	"name" : "OSRadiator",
+	"description" : "Plugin de gestion des radiateurs électrique avec un écran de contrôle, le tout piloté par Tasmota",
+	"licence" : "Apache License Version 2.0",
+	"author" : "tplet",
+	"require" : "4.4",
+	"category" : "automation protocol",
+	"hasDependency" : false,
+	"hasOwnDeamon" : false,
+	"maxDependancyInstallTime" : 0,
+	"changelog" : "https://github.com/tplet/jeedom-os-radiator/changelog",
+	"documentation" : "https://github.com/tplet/jeedom-os-radiator/",
+	"link" : {
+		"forum":"",
+		"video" : ""
+	},
+	"language" : ["fr_FR"],
+	"compatibility" : ["miniplus","smart","rpi","docker","diy","mobile"]
+}
