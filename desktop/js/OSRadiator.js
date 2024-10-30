@@ -32,19 +32,19 @@ $("#bt_addOSRadiatorAction").on('click', function (event) {
 })
 
 
-$("#table_cmd").delegate(".listEquipementInfo", 'click', function () {
+$("#tabContent").delegate(".listEquipementInfo", 'click', function () {
   var el = $(this)
   jeedom.cmd.getSelectModal({cmd: {type: 'info'}}, function (result) {
-    var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']')
+    var calcul = el.closest('.form-row').find('.formAttr[data-l1key=configuration][data-l2key=' + el.data('input') + ']')
     calcul.atCaret('insert', result.human)
   })
 })
 
-$("#table_cmd").delegate(".listEquipementAction", 'click', function () {
+$("#tabContent").delegate(".listEquipementAction", 'click', function () {
   var el = $(this)
-  var subtype = $(this).closest('.cmd').find('.cmdAttr[data-l1key=subType]').value()
+  var subtype = $(this).closest('.cmd').find('.formAttr[data-l1key=subType]').value()
   jeedom.cmd.getSelectModal({cmd: {type: 'action', subType: subtype}}, function (result) {
-    var calcul = el.closest('tr').find('.cmdAttr[data-l1key=configuration][data-l2key=' + el.attr('data-input') + ']')
+    var calcul = el.closest('.form-row').find('.formAttr[data-l1key=configuration][data-l2key=' + el.attr('data-input') + ']')
     calcul.atCaret('insert', result.human);
   })
 })
@@ -63,44 +63,44 @@ function addCmdToTable(_cmd) {
   }
 
   if (init(_cmd.type) == 'info') {
-    var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '" OSRadiatorAction="' + init(_cmd.configuration.OSRadiatorAction) + '">'
+    var tr = '<tr class="cmd form-row" data-cmd_id="' + init(_cmd.id) + '" OSRadiatorAction="' + init(_cmd.configuration.OSRadiatorAction) + '">'
     tr += '<td class="hidden-xs">'
-    tr += '<span class="cmdAttr" data-l1key="id"></span>'
+    tr += '<span class="cmdAttr formAttr" data-l1key="id"></span>'
     tr += '</td>'
     tr += '<td>'
     tr += '<div class="input-group">'
-    tr += '<input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" placeholder="{{Nom de la commande}}">'
+    tr += '<input class="cmdAttr formAttr form-control input-sm roundedLeft" data-l1key="name" placeholder="{{Nom de la commande}}">'
     tr += '<span class="input-group-btn">'
     tr += '<a class="cmdAction btn btn-sm btn-default" data-l1key="chooseIcon" title="{{Choisir une icône}}"><i class="fas fa-icons"></i></a>'
     tr += '</span>'
-    tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;padding:0 5px 0 0!important;"></span>'
+    tr += '<span class="cmdAttr formAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;padding:0 5px 0 0!important;"></span>'
     tr += '</div>'
     tr += '</td>'
     tr += '<td>'
-    tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;">'
+    tr += '<input class="cmdAttr formAttr form-control type input-sm" data-l1key="type" value="info" disabled style="margin-bottom:5px;">'
     tr += '<span class="subType" subType="' + init(_cmd.subType) + '"></span>'
     tr += '</td>'
     tr += '<td>'
     if (init(_cmd.configuration.OSRadiatorAction) != '1') {
-      tr += '<textarea class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="calcul" style="height:35px;" placeholder="{{Calcul}}"></textarea>'
+      tr += '<textarea class="cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="calcul" style="height:35px;" placeholder="{{Calcul}}"></textarea>'
       tr += '<a class="btn btn-default listEquipementInfo btn-xs" data-input="calcul" style="width:100%;margin-top:2px;"><i class="fas fa-list-alt"></i> {{Rechercher équipement}}</a>'
     }
     tr += '</td>'
     tr += '<td>'
-    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="returnStateValue" placeholder="{{Valeur retour d\'état}}" style="margin-bottom:5px;">'
-    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="returnStateTime" placeholder="{{Durée avant retour d\'état (min)}}">'
-    tr += '<select class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="updateCmdId" style="display:none;" title="{{Commande d\'information à mettre à jour}}">'
+    tr += '<input class="cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="returnStateValue" placeholder="{{Valeur retour d\'état}}" style="margin-bottom:5px;">'
+    tr += '<input class="cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="returnStateTime" placeholder="{{Durée avant retour d\'état (min)}}">'
+    tr += '<select class="cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="updateCmdId" style="display:none;" title="{{Commande d\'information à mettre à jour}}">'
     tr += '<option value="">{{Aucune}}</option>'
     tr += '</select>'
     tr += '</td>'
     tr += '<td>'
-    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-l1key="isVisible" checked/>{{Afficher}}</label> '
-    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-l1key="isHistorized" checked/>{{Historiser}}</label> '
-    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label> '
+    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr formAttr" data-l1key="isVisible" checked/>{{Afficher}}</label> '
+    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr formAttr" data-l1key="isHistorized" checked/>{{Historiser}}</label> '
+    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr formAttr" data-l1key="display" data-l2key="invertBinary"/>{{Inverser}}</label> '
     tr += '<div style="margin-top:7px;">'
-    tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
-    tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
-    tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
+    tr += '<input class="tooltips cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
+    tr += '<input class="tooltips cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
+    tr += '<input class="tooltips cmdAttr formAttr form-control input-sm" data-l1key="unite" placeholder="Unité" title="{{Unité}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
     tr += '</div>'
     tr += '</td>'
     tr += '<td>'
@@ -119,53 +119,53 @@ function addCmdToTable(_cmd) {
   }
 
   if (init(_cmd.type) == 'action') {
-    var tr = '<tr class="cmd" data-cmd_id="' + init(_cmd.id) + '">';
+    var tr = '<tr class="cmd " data-cmd_id="' + init(_cmd.id) + '">';
     tr += '<td class="hidden-xs">'
-    tr += '<span class="cmdAttr" data-l1key="id"></span>'
+    tr += '<span class="cmdAttr formAttr" data-l1key="id"></span>'
     tr += '</td>'
     tr += '<td>'
     tr += '<div class="input-group">'
-    tr += '<input class="cmdAttr form-control input-sm roundedLeft" data-l1key="name" placeholder="{{Nom de la commande}}">'
+    tr += '<input class="cmdAttr formAttr form-control input-sm roundedLeft" data-l1key="name" placeholder="{{Nom de la commande}}">'
     tr += '<span class="input-group-btn">'
     tr += '<a class="cmdAction btn btn-sm btn-default" data-l1key="chooseIcon" title="{{Choisir une icône}}"><i class="fas fa-icons"></i></a>'
     tr += '</span>'
-    tr += '<span class="cmdAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;padding:0 5px 0 0!important;"></span>'
+    tr += '<span class="cmdAttr formAttr input-group-addon roundedRight" data-l1key="display" data-l2key="icon" style="font-size:19px;padding:0 5px 0 0!important;"></span>'
     tr += '</div>'
-    tr += '<select class="cmdAttr form-control input-sm" data-l1key="value" style="display:none;margin-top:5px;" title="{{Commande information liée}}">'
+    tr += '<select class="cmdAttr formAttr form-control input-sm" data-l1key="value" style="display:none;margin-top:5px;" title="{{Commande information liée}}">'
     tr += '<option value="">{{Aucune}}</option>';
     tr += '</select>'
     tr += '</td>'
     tr += '<td>'
-    tr += '<input class="cmdAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;" />'
+    tr += '<input class="cmdAttr formAttr form-control type input-sm" data-l1key="type" value="action" disabled style="margin-bottom:5px;" />'
     tr += '<span class="subType" subType="' + init(_cmd.subType) + '"></span>'
-    tr += '<input class="cmdAttr" data-l1key="configuration" data-l2key="OSRadiatorAction" value="1" style="display:none;" />'
+    tr += '<input class="cmdAttr formAttr" data-l1key="configuration" data-l2key="OSRadiatorAction" value="1" style="display:none;" />'
     tr += '</td>'
     tr += '<td>'
     tr += '<div class="input-group" style="margin-bottom:5px;">'
-    tr += '<input class="cmdAttr form-control input-sm roundedLeft" data-l1key="configuration" data-l2key="infoName" placeholder="{{Nom information}}"/>'
+    tr += '<input class="cmdAttr formAttr form-control input-sm roundedLeft" data-l1key="configuration" data-l2key="infoName" placeholder="{{Nom information}}"/>'
     tr += '<span class="input-group-btn">'
     tr += '<a class="btn btn-default btn-sm listEquipementAction roundedRight" data-input="infoName"><i class="fas fa-list-alt"></i></a>'
     tr += '</span>'
     tr += '</div>'
     tr += '<div class="input-group">'
-    tr += '<input class="cmdAttr form-control input-sm roundedLeft" data-l1key="configuration" data-l2key="value" placeholder="{{Valeur}}" />'
+    tr += '<input class="cmdAttr formAttr form-control input-sm roundedLeft" data-l1key="configuration" data-l2key="value" placeholder="{{Valeur}}" />'
     tr += '<span class="input-group-btn">'
     tr += '<a class="btn btn-default btn-sm listEquipementInfo roundedRight" data-input="value"><i class="fas fa-list-alt"></i></a>'
     tr += '</span>'
     tr += '</div>'
     tr += '</td>'
     tr += '<td>'
-    tr += '<select class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="updateCmdId" style="margin-bottom:5px;" title="{{Commande information à mettre à jour}}">'
+    tr += '<select class="cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="updateCmdId" style="margin-bottom:5px;" title="{{Commande information à mettre à jour}}">'
     tr += '<option value="">{{Aucune}}</option>'
     tr += '</select>'
-    tr += '<input class="cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="updateCmdToValue" placeholder="{{Valeur de l\'information}}" style="display:none;">'
+    tr += '<input class="cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="updateCmdToValue" placeholder="{{Valeur de l\'information}}" style="display:none;">'
     tr += '</td>'
     tr += '<td>'
-    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr" data-l1key="isVisible" checked/>{{Afficher}}</label> '
+    tr += '<label class="checkbox-inline"><input type="checkbox" class="cmdAttr formAttr" data-l1key="isVisible" checked/>{{Afficher}}</label> '
     tr += '<div style="margin-top:7px;">'
-    tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
-    tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:30%;max-width:80px;display:inline-block;">'
-    tr += '<input class="tooltips cmdAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte (séparées par un point-virgule)}}" title="{{Liste : valeur|texte}}">'
+    tr += '<input class="tooltips cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="minValue" placeholder="{{Min}}" title="{{Min}}" style="width:30%;max-width:80px;display:inline-block;margin-right:2px;">'
+    tr += '<input class="tooltips cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="maxValue" placeholder="{{Max}}" title="{{Max}}" style="width:30%;max-width:80px;display:inline-block;">'
+    tr += '<input class="tooltips cmdAttr formAttr form-control input-sm" data-l1key="configuration" data-l2key="listValue" placeholder="{{Liste : valeur|texte (séparées par un point-virgule)}}" title="{{Liste : valeur|texte}}">'
     tr += '</div>'
     tr += '</td>'
     tr += '<td>'

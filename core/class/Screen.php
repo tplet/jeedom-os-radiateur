@@ -33,6 +33,13 @@ class Screen
     protected ?ScreenText $currentScreenText = null;
 
     /**
+     * Display on/off
+     *
+     * @var bool
+     */
+    protected bool $on = false;
+
+    /**
      * Remove selection
      *
      * @return void
@@ -154,5 +161,21 @@ class Screen
     public function getCurrentScreenText(): ?ScreenText
     {
         return $this->currentScreenText;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOn(): bool
+    {
+        return $this->on;
+    }
+
+    /**
+     * @param bool $on
+     */
+    public function setOn(bool $on): void
+    {
+        $this->on = $on;
     }
 }

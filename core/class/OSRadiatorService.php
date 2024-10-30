@@ -11,9 +11,14 @@ class OSRadiatorService
      *
      * @param OSRadiator $eqLogic
      * @return bool
+     * @deprecated Use eqLogicAttr configuration instead
      */
     static public function generateDefaultCommands(OSRadiator $eqLogic): bool
     {
+        return false;
+
+        // Deprecated
+
         self::logDebug('Generate default commands for device "' . $eqLogic->getName() . '" (' . $eqLogic->getLogicalId() . ')');
 
         // Generate all default commands
@@ -22,7 +27,8 @@ class OSRadiatorService
                 $eqLogic,
                 $key,
                 $config['name'],
-                $config['type'],
+                $config['type'] ?? 'info',
+                $config['subtype'],
                 $config['unit'] ?? ''
             );
 
@@ -40,51 +46,56 @@ class OSRadiatorService
     static protected function generateDefaultCommandsConfig(): array
     {
         return [
+            'backlog' => [
+                'name' => 'Backlog',
+                'type' => 'action',
+                'subtype' => 'other',
+            ],
             'mode' => [
                 'name' => 'Mode',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'submode' => [
                 'name' => 'Sous-mode',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'onoff' => [
                 'name' => 'On/Off',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'temperature' => [
                 'name' => 'Température',
-                'type' => 'numeric',
+                'subtype' => 'numeric',
                 'unit' => '°C',
             ],
             'target' => [
                 'name' => 'Consigne',
-                'type' => 'numeric',
+                'subtype' => 'numeric',
                 'unit' => '°C',
             ],
             'radiator-state' => [
                 'name' => 'Etat radiateur',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'joystick-UP' => [
                 'name' => 'Joystick-UP',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'joystick-DOWN' => [
                 'name' => 'Joystick-DOWN',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'joystick-LEFT' => [
                 'name' => 'Joystick-LEFT',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'joystick-RIGHT' => [
                 'name' => 'Joystick-RIGHT',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
             'joystick-CLICK' => [
                 'name' => 'Joystick-CLICK',
-                'type' => 'string',
+                'subtype' => 'string',
             ],
         ];
     }
@@ -93,6 +104,7 @@ class OSRadiatorService
         OSRadiator $eqLogic,
         string $logicalId,
         string $name,
+        string $type = 'info',
         string $subtype = '',
         string $unit = ''
     ): OSRadiatorCmd
@@ -101,9 +113,9 @@ class OSRadiatorService
         $cmd->setLogicalId($logicalId);
         $cmd->setEqLogic_id($eqLogic->getId());
         $cmd->setName($name);
-        $cmd->setType('info');
-        $cmd->setIsVisible(true);
-        $cmd->setIsHistorized(false);
+        $cmd->setType($type);
+        $cmd->setIsVisible(1);
+        $cmd->setIsHistorized(0);
         $cmd->setSubType($subtype);
         $cmd->setUnite($unit);
 

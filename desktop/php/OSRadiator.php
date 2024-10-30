@@ -17,10 +17,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<span>{{Ajouter}}</span>
 			</div>
 		</div>
-		<legend><i class="fas fa-clone"></i> {{Mes virtuels}}</legend>
+		<legend><i class="fas fa-clone"></i> {{Mes radiateurs à écran}}</legend>
 		<?php
 		if (count($eqLogics) == 0) {
-			echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun équipement virtuel trouvé, cliquer sur "Ajouter" pour commencer}}</div>';
+			echo '<br><div class="text-center" style="font-size:1.2em;font-weight:bold;">{{Aucun radiateurs à écran trouvé, cliquer sur "Ajouter" pour commencer}}</div>';
 		}
 		else {
 			echo '<div class="input-group" style="margin:5px;">';
@@ -31,6 +31,9 @@ $eqLogics = eqLogic::byType($plugin->getId());
 			echo '</div>';
 			echo '</div>';
 			echo '<div class="eqLogicThumbnailContainer">';
+            /*
+             * List all eqLogic
+             */
 			foreach ($eqLogics as $eqLogic) {
 				$opacity = ($eqLogic->getIsEnable()) ? '' : 'disableCard';
 				echo '<div class="eqLogicDisplayCard cursor '.$opacity.'" data-eqLogic_id="' . $eqLogic->getId() . '">';
@@ -56,12 +59,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		?>
 	</div>
 
+    <?php /* Create/Edit form eqLogic */ ?>
 	<div class="col-xs-12 eqLogic" style="display:none;">
 		<div class="input-group pull-right" style="display:inline-flex">
 			<span class="input-group-btn">
-				<a class="btn btn-primary btn-sm roundedLeft" id="bt_showExpressionTest"><i class="fas fa-check"></i><span class="hidden-xs"> {{Expression}}</span>
-				</a><a class="btn btn-default btn-sm" id="bt_importTemplate"><i class="fas fa-cubes"></i><span class="hidden-xs"> {{Template}}</span>
-				</a><a class="btn btn-default btn-sm" id="bt_importEqLogic"><i class="fas fa-share"></i><span class="hidden-xs"> {{Importer équipement}}</span>
 				</a><a class="btn btn-sm btn-default eqLogicAction" data-action="configure"><i class="fas fa-cogs"></i><span class="hidden-xs"> {{Configuration avancée}}</span>
 				</a><a class="btn btn-sm btn-default eqLogicAction" data-action="copy"><i class="fas fa-copy"></i><span class="hidden-xs">  {{Dupliquer}}</span>
 				</a><a class="btn btn-sm btn-success eqLogicAction" data-action="save"><i class="fas fa-check-circle"></i> {{Sauvegarder}}
@@ -71,19 +72,20 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fas fa-arrow-circle-left"></i></a></li>
 			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+            <li role="presentation"><a href="#configurationTab" aria-controls="eqLogicConfiguration" role="tab" data-toggle="tab"><i class="fas fa-cog"></i> {{Configuration}}</a></li>
 			<li role="presentation"><a href="#commandtab" aria-controls="profile" role="tab" data-toggle="tab"><i class="fas fa-list-alt"></i> {{Commandes}}</a></li>
 		</ul>
-		<div class="tab-content">
+		<div class="tab-content" id="tabContent">
 			<div role="tabpanel" class="tab-pane active" id="eqlogictab">
 				<form class="form-horizontal">
 					<fieldset>
 						<div class="col-lg-6">
 							<legend><i class="fas fa-wrench"></i> {{Paramètres généraux}}</legend>
 							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Nom du virtuel}}</label>
+								<label class="col-sm-4 control-label">{{Nom du radiateur écran}}</label>
 								<div class="col-sm-6">
 									<input type="text" class="eqLogicAttr form-control" data-l1key="id" style="display:none;">
-									<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom de l'équipement virtuel}}">
+									<input type="text" class="eqLogicAttr form-control" data-l1key="name" placeholder="{{Nom du radiateur écran}}">
 								</div>
 							</div>
 							<div class="form-group">
@@ -139,7 +141,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<div class="col-lg-6">
 							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
 							<div class="form-group">
-								<label class="col-sm-4 control-label">{{Description du virtuel}}</label>
+								<label class="col-sm-4 control-label">{{Description de l'équipement}}</label>
 								<div class="col-sm-6">
 									<textarea class="form-control eqLogicAttr autogrow" data-l1key="comment"></textarea>
 								</div>
@@ -159,11 +161,45 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<hr>
 			</div>
 
+            <div role="tabpanel" class="tab-pane" id="configurationTab">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <div class="col-lg-6">
+                            <legend><i class="fas fa-cogs"></i> {{Informations}}</legend>
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Température}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenTemperature" placeholder="{{Température}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenTemperature"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <legend><i class="fas fa-cogs"></i> {{Actions}}</legend>
+                            <div class="form-group">
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Sélection HAUT}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenButtonUP" placeholder="{{Sélection HAUT}}"/>
+                                        <span class="input-group-btn">
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
 			<div role="tabpanel" class="tab-pane" id="commandtab">
 				<div class="input-group pull-right" style="display:inline-flex;margin-top:5px;">
 					<span class="input-group-btn">
-						<a class="btn btn-info btn-xs roundedLeft" id="bt_addOSRadiatorInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une info virtuelle}}
-						</a><a class="btn btn-warning btn-xs roundedRight" id="bt_addOSRadiatorAction"><i class="fas fa-plus-circle"></i> {{Ajouter une action virtuelle}}</a>
+						<a class="btn btn-info btn-xs roundedLeft" id="bt_addOSRadiatorInfo"><i class="fas fa-plus-circle"></i> {{Ajouter une info}}
+						</a><a class="btn btn-warning btn-xs roundedRight" id="bt_addOSRadiatorAction"><i class="fas fa-plus-circle"></i> {{Ajouter une action}}</a>
 					</span>
 				</div>
 				<br><br>
