@@ -176,6 +176,51 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                         </span>
                                     </div>
                                 </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Consigne}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenConsigne" placeholder="{{Consigne}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenConsigne"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Chauffage : Mode}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenChauffageMode" placeholder="{{Mode}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenChauffageMode"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Chauffage : Sous-mode (si existant)}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenChauffageSousMode" placeholder="{{Sous-mode ou vide}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenChauffageSousMode"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Chauffage : On/Off}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenChauffageOnOff" placeholder="{{On/Off}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenChauffageOnOff"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Radiateur : état brut}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenRadiatorState" placeholder="{{Etat}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenRadiatorState"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-6">
