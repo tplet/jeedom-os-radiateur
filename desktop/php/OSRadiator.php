@@ -221,16 +221,62 @@ $eqLogics = eqLogic::byType($plugin->getId());
                                         </span>
                                     </div>
                                 </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Sélection HAUT}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenButtonUP" placeholder="{{Sélection HAUT}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenButtonUP"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Sélection BAS}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenButtonDOWN" placeholder="{{Sélection BAS}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenButtonDOWN"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Sélection GAUCHE}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenButtonLEFT" placeholder="{{Sélection GAUCHE}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenButtonLEFT"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Sélection DROITE}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenButtonRIGHT" placeholder="{{Sélection DROITE}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenButtonRIGHT"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Sélection CLICK}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenButtonCLICK" placeholder="{{Sélection CLICK}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementInfo btn" data-input="screenButtonCLICK"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="col-lg-6">
                             <legend><i class="fas fa-cogs"></i> {{Actions}}</legend>
                             <div class="form-group">
                                 <div class="form-row">
-                                    <label class="col-sm-4 control-label">{{Sélection HAUT}}</label>
+                                    <label class="col-sm-4 control-label">{{Backlog0}}</label>
                                     <div class="col-sm-6 input-group">
-                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenButtonUP" placeholder="{{Sélection HAUT}}"/>
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenBacklog0" placeholder="{{Backlog0}}"/>
                                         <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementAction btn" data-input="screenBacklog0"><i class="fas fa-list-alt"></i></a>
                                         </span>
                                     </div>
                                 </div>
