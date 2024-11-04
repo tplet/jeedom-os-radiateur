@@ -272,6 +272,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
                             <legend><i class="fas fa-cogs"></i> {{Actions}}</legend>
                             <div class="form-group">
                                 <div class="form-row">
+                                    <label class="col-sm-4 control-label">{{Thermostat}}</label>
+                                    <div class="col-sm-6 input-group">
+                                        <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenThermostat" placeholder="{{Thermostat}}"/>
+                                        <span class="input-group-btn">
+                                            <a class="btn btn-default listEquipementAction btn" data-input="screenThermostat"><i class="fas fa-list-alt"></i></a>
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="form-row">
                                     <label class="col-sm-4 control-label">{{Backlog0}}</label>
                                     <div class="col-sm-6 input-group">
                                         <input type="text" class="eqLogicAttr formAttr form-control" data-l1key="configuration" data-l2key="screenBacklog0" placeholder="{{Backlog0}}"/>

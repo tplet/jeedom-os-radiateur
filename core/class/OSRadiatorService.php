@@ -9,6 +9,7 @@ class OSRadiatorService
     const KEY_BACKLOG = 'backlog';
     const KEY_TEMPERATURE = 'temperature';
     const KEY_CONSIGNE = 'consigne';
+    const KEY_THERMOSTAT = 'thermostat';
     const KEY_MODE = 'mode';
     const KEY_SUB_MODE = 'subMode';
     const KEY_ON_OFF = 'onOff';
@@ -29,6 +30,7 @@ class OSRadiatorService
         return [
             self::KEY_TEMPERATURE,
             self::KEY_CONSIGNE,
+            self::KEY_THERMOSTAT,
             self::KEY_MODE,
             self::KEY_SUB_MODE,
             self::KEY_ON_OFF,
@@ -54,6 +56,9 @@ class OSRadiatorService
             ],
             self::KEY_CONSIGNE => [
                 'key' => 'screenConsigne',
+            ],
+            self::KEY_THERMOSTAT => [
+                'key' => 'screenThermostat',
             ],
             self::KEY_MODE => [
                 'key' => 'screenChauffageMode',
@@ -238,8 +243,6 @@ class OSRadiatorService
 
         }
 
-
-
         // Finally, refresh screen
         self::refreshScreen($eqLogic);
     }
@@ -288,7 +291,6 @@ class OSRadiatorService
 
         $listener->save();
     }
-
 
     /**
      * Refresh screen
