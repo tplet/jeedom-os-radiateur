@@ -64,8 +64,10 @@ class Screen
     public function selectNext(): void
     {
         $list = $this->getSelectableScreenTexts();
-        if (count($list) > 0) {
-            $this->setSelectedIndex(($this->selectedIndex + 1) % count($list));
+        $count = count($list);
+        if ($count > 0) {
+            $this->setSelectedIndex(($this->selectedIndex + 1) % $count);
+
         }
     }
 
@@ -77,8 +79,9 @@ class Screen
     public function selectPrev(): void
     {
         $list = $this->getSelectableScreenTexts();
-        if (count($list) > 0) {
-            $this->setSelectedIndex(($this->selectedIndex - 1 + count($list)) % count($list));
+        $count = count($list);
+        if ($count > 0) {
+            $this->setSelectedIndex(($this->selectedIndex - 1 + $count) % $count);
         }
     }
 
@@ -137,8 +140,14 @@ class Screen
     {
         $list = $this->getSelectableScreenTexts();
         if ($selectedIndex >= 0 && $selectedIndex < count($list)) {
+            // Previous
+            if ($this->currentScreenText !== null) {
+                $this->currentScreenText->setSelected(false);
+            }
+            // Next
             $this->currentScreenComponent = $list[$selectedIndex][0];
             $this->currentScreenText = $list[$selectedIndex][1];
+            $this->currentScreenText->setSelected(true);
             $this->selectedIndex = $selectedIndex;
         }
     }
@@ -200,4 +209,15 @@ class Screen
     {
         $this->initialized = $initialized;
     }
+
+    public function __toString(): string
+    {
+        return str_replace('"', '\'', json_encode([
+            'selectedIndex' => $this->selectedIndex,
+            'initialized' => $this->initialized,
+            'on' => $this->on,
+        ]));
+    }
+
+
 }

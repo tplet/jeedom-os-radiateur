@@ -30,6 +30,11 @@ class TasmotaDisplayService
      */
     static public function generateDTPart(ScreenComponent $component, bool $allowSelection = true): string
     {
+        $screenTexts = $component->getScreenTexts();
+        if (count($screenTexts) === 0) {
+            return '';
+        }
+
         // Pad
         $simulateLength = 0;
         foreach ($component->getScreenTexts() as $text) {
@@ -44,9 +49,24 @@ class TasmotaDisplayService
 
 
         // Content
-        $command = '[x' . $component->getX() . 'y' . $component->getY() . ']' . $padBefore;
-        foreach ($component->getScreenTexts() as $text) {
-            $command .= '[' . ($allowSelection && $text->isSelected() ? 'B1C0' : 'B0C1') . ']' . self::encode($text->getText());
+        $command = '[x' . $component->getX() . 'y' . $component->getY();
+        $selected = false;
+        $i = 0;
+        foreach ($screenTexts as $text) {
+            // First line
+            if ($i == 0) {
+                $selected = $allowSelection && $text->isSelected();
+                $command .= ($selected ? 'B1C0' : 'B0C1') . ']' . $padBefore;
+            }
+            // Other lines
+            else {
+                if (($allowSelection && $text->isSelected()) !== $selected) {
+                    $selected = $allowSelection && $text->isSelected();
+                    $command .= '[' . ($selected ? 'B1C0' : 'B0C1') . ']';
+                }
+            }
+            $command .= self::encode($text->getText());
+            $i++;
         }
         $command .= $padAfter;
 

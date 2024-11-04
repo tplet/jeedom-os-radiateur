@@ -8,7 +8,7 @@ require_once __DIR__ . '/TasmotaDisplayService.php';
 class OSRadiator extends eqLogic
 {
     const KEY_SCREEN_SELECTION_INDEX = 'screenSelectionIndex';
-    const KEY_SCREEN_ON = false;
+    const KEY_SCREEN_ON = 'screenOn';
 
     /**
      * Virtual screen associated
@@ -41,19 +41,15 @@ class OSRadiator extends eqLogic
     }
 
     /**
-     * Save eqLogic
+     * Post save
      *
-     * @param $_direct
      * @return void
-     * @throws Exception
      */
-    public function save($_direct = false)
+    public function postSave()
     {
-        $isNew = $this->getId() == '';
-        parent::save($_direct);
-
         OSRadiatorService::subscribeListenerFromConfiguration($this);
     }
+
 
     public function getScreen(): Screen
     {
@@ -72,6 +68,9 @@ class OSRadiator extends eqLogic
     public function setScreenSelectionIndex(int $index): void
     {
         $this->setCache(self::KEY_SCREEN_SELECTION_INDEX, $index);
+        $this->save(true);
+
+        OSRadiatorService::logInfo($this->getHumanName() . ': Set screen selection index: ' . $index);
     }
 
     public function isScreenOn(): bool
@@ -82,6 +81,7 @@ class OSRadiator extends eqLogic
     public function setScreenOn(bool $on, bool $refresh = false): void
     {
         $this->setCache(self::KEY_SCREEN_ON, $on);
+        $this->save(true);
         $this->getScreen()->setOn($on);
 
         if ($refresh) {

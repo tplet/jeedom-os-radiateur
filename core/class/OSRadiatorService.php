@@ -115,7 +115,6 @@ class OSRadiatorService
     {
         $screen = new Screen();
         $screen->setOn($eqLogic->isScreenOn());
-        $screen->setSelectedIndex($eqLogic->getScreenSelectionIndex());
 
         $screenSize = ['width' => 128, 'height' => 32];
         $hasSubMode = $eqLogic->hasSubMode();
@@ -123,12 +122,6 @@ class OSRadiatorService
         /*
          * Components
          */
-        // Temperature/Consigne
-        $cTemperature = new ScreenComponent(51, $screenSize['height']/2 - 8, 15);
-        $cTemperature->addScreenText($eqLogic->getScreenTextTemperature());
-        $cTemperature->addScreenText(new ScreenText(false, false, '/'));
-        $cTemperature->addScreenText($eqLogic->getScreenTextTarget());
-        $screen->addScreenComponent($cTemperature);
         // Heat mode
         $cHeatMode = new ScreenComponent(0, $screenSize['height']/2 - ($hasSubMode ? 8 : 4), 8);
         $cHeatMode->addScreenText($eqLogic->getScreenTextHeatMode());
@@ -139,10 +132,19 @@ class OSRadiatorService
             $cHeatSubMode->addScreenText($eqLogic->getScreenTextHeatSubMode());
             $screen->addScreenComponent($cHeatSubMode);
         }
+        // Temperature/Consigne
+        $cTemperature = new ScreenComponent(51, $screenSize['height']/2 - 8, 15);
+        $cTemperature->addScreenText($eqLogic->getScreenTextTemperature());
+        $cTemperature->addScreenText(new ScreenText(false, false, '/'));
+        $cTemperature->addScreenText($eqLogic->getScreenTextTarget());
+        $screen->addScreenComponent($cTemperature);
         // Heat brut
         $cHeatBrut = new ScreenComponent(51, $screenSize['height']/2, 15);
         $cHeatBrut->addScreenText($eqLogic->getScreenTextHeatBrut());
         $screen->addScreenComponent($cHeatBrut);
+
+        // Restore selection index
+        $screen->setSelectedIndex($eqLogic->getScreenSelectionIndex());
 
         return $screen;
     }
@@ -198,7 +200,7 @@ class OSRadiatorService
         /** @var Screen $screen */
         $screen = $eqLogic->getScreen();
 
-        self::logInfo('Cmd ' . $cmdUpdated->getHumanName() . ' updated. Refresh radiator screen ' . $eqLogic->getHumanName());
+        self::logInfo($eqLogic->getHumanName() . ': Cmd ' . $cmdUpdated->getHumanName() . ' updated, refresh radiator screen.');
 
         /*
          * Actions (from joystick)
@@ -214,7 +216,7 @@ class OSRadiatorService
         // If is button, enable screen
         if ($isCmdUpdatedIsButton) {
             $eqLogic->setScreenOn(true);
-            self::logInfo("Button detected, enable screen for eqLogic " . $eqLogic->getHumanName());
+            self::logInfo($eqLogic->getHumanName() . ": button detected, enable screen for eqLogic.");
         }
 
         // Change selection
@@ -273,7 +275,7 @@ class OSRadiatorService
         foreach (OSRadiatorService::getKeyConfigToListen() as $key) {
             $cmd = $eqLogic->getConfigurationCmd($key, true);
             if (!$cmd) {
-                OSRadiatorService::logDebug('Cmd not found for eqLogic ' . $eqLogic->getHumanName() . ' and key "' . $key . '"');
+                self::logDebug($eqLogic->getHumanName() . ': cmd not found for key "' . $key . '"');
                 continue;
             }
 
@@ -281,7 +283,7 @@ class OSRadiatorService
             $listener->addEvent($cmd->getId());
 
             // Log
-            OSRadiatorService::logInfo('Subscribe listener for eqLogic ' . $eqLogic->getHumanName() . ', key "' . $key . '" and cmd ' . $cmd->getHumanName());
+            self::logInfo($eqLogic->getHumanName() . ': subscribe listener for key "' . $key . '" and cmd ' . $cmd->getHumanName());
         }
 
         $listener->save();
@@ -298,7 +300,7 @@ class OSRadiatorService
     {
         $cmdBacklog = $eqLogic->getConfigurationCmd(OSRadiatorService::KEY_BACKLOG);
         if (!$cmdBacklog) {
-            self::logError("Backlog cmd not found for eqLogic " . $eqLogic->getHumanName());
+            self::logError($eqLogic->getHumanName() . ': backlog cmd not found.');
             return false;
         }
 
@@ -306,7 +308,7 @@ class OSRadiatorService
         $screen = $eqLogic->getScreen();
         self::populateScreenContent($eqLogic);
 
-        self::logInfo("Do refresh screen for eqLogic " . $eqLogic->getHumanName());
+        self::logInfo($eqLogic->getHumanName() . ': do refresh screen.');
 
         return TasmotaDisplayService::refresh($screen, $cmdBacklog);
     }

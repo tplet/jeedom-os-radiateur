@@ -29,4 +29,15 @@ class ScreenText
     public function isSelected(): bool { return $this->selected; }
     public function setSelectable(bool $flag): void { $this->selectable = $flag; }
     public function isSelectable(): bool { return $this->selectable; }
+
+    public function __toString(): string
+    {
+        return str_replace('"', '\'', json_encode([
+            'text' => $this->text,
+            'selected' => $this->selected,
+            'selectable' => $this->selectable,
+        ]));
+    }
+
+
 }
