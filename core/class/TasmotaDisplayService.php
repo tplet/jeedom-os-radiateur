@@ -47,26 +47,19 @@ class TasmotaDisplayService
             $padAfter = str_repeat(' ', ceil($padNb / 2));
         }
 
+        // Selected
+        $selected = false;
+        foreach ($screenTexts as $text) {
+            if ($allowSelection && $text->isSelected()) {
+                $selected = true;
+                break;
+            }
+        }
 
         // Content
-        $command = '[x' . $component->getX() . 'y' . $component->getY();
-        $selected = false;
-        $i = 0;
+        $command = '[x' . $component->getX() . 'y' . $component->getY() . ($selected ? 'B1C0' : 'B0C1') . ']' . $padBefore;
         foreach ($screenTexts as $text) {
-            // First line
-            if ($i == 0) {
-                $selected = $allowSelection && $text->isSelected();
-                $command .= ($selected ? 'B1C0' : 'B0C1') . ']' . $padBefore;
-            }
-            // Other lines
-            else {
-                if (($allowSelection && $text->isSelected()) !== $selected) {
-                    $selected = $allowSelection && $text->isSelected();
-                    $command .= '[' . ($selected ? 'B1C0' : 'B0C1') . ']';
-                }
-            }
             $command .= self::encode($text->getText());
-            $i++;
         }
         $command .= $padAfter;
 
