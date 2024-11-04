@@ -30,10 +30,25 @@ class TasmotaDisplayService
      */
     static public function generateDTPart(ScreenComponent $component, bool $allowSelection = true): string
     {
-        $command = '[x' . $component->getX() . 'y' . $component->getY() . ']';
+        // Pad
+        $simulateLength = 0;
+        foreach ($component->getScreenTexts() as $text) {
+            $simulateLength += strlen($text->getText());
+        }
+        $padBefore = $padAfter = '';
+        if ($component->hasPad()) {
+            $padNb = max(0, $component->getPad() - $simulateLength);
+            $padBefore = str_repeat(' ', floor($padNb / 2));
+            $padAfter = str_repeat(' ', ceil($padNb / 2));
+        }
+
+
+        // Content
+        $command = '[x' . $component->getX() . 'y' . $component->getY() . ']' . $padBefore;
         foreach ($component->getScreenTexts() as $text) {
             $command .= '[' . ($allowSelection && $text->isSelected() ? 'B1C0' : 'B0C1') . ']' . self::encode($text->getText());
         }
+        $command .= $padAfter;
 
         return $command;
     }
@@ -41,27 +56,56 @@ class TasmotaDisplayService
     /**
      * Render display text instruction
      */
-    static public function render(Screen $screen, bool $init = true, bool $clear = true): string
+    static public function render(Screen $screen, bool $clear = true): string
     {
         $message = [];
         // Init screen
-        if ($init) {
+        if (!$screen->isInitialized()) {
             $message[] = 'DisplayDimmer 1; DisplaySize 1;';
         }
 
-        // Prepare content
-        $hasSelection = $screen->hasSelection();
-        $displayText = [];
-        foreach ($screen->getScreenComponents() as $component) {
-            $displayText[] = self::generateDTPart($component, $hasSelection);
+        // If screen off, send off
+        if (!$screen->isOn()) {
+            $message[] = 'DisplayText [o];';
+        }
+        // Else, screen on and prepare content
+        else {
+            $hasSelection = $screen->hasSelection();
+            $displayText = [];
+            foreach ($screen->getScreenComponents() as $component) {
+                $displayText[] = self::generateDTPart($component, $hasSelection);
+            }
+
+            // Temporary: Display horizontal line
+            $displayText[] = '[x0y32h128]';
+
+            // DisplayText instruction
+            $message[] = 'DisplayText [O' . ($clear ? 'z' : '') . 'C1' . (!$screen->isInitialized(
+                ) ? 'f0' : '') . ']' . implode('', $displayText) . ';';
         }
 
-        // Temporary: Display horizontal line
-        $displayText[] = '[x0y32h128]';
-
-        // DisplayText instruction
-        $message[] = 'DisplayText [O'. ($clear ? 'z' : '') . 'C1' . ($init ? 'f0' : '') . ']' . implode('', $displayText) . ';';
-
         return implode(' ', $message);
+    }
+
+    /**
+     * Refresh screen
+     *
+     * @param Screen $screen
+     * @param cmd $cmdBacklog
+     * @return bool
+     */
+    static public function refresh(Screen $screen, cmd $cmdBacklog): bool
+    {
+        // Generate render
+        $render = self::render($screen);
+        if (!$screen->isInitialized()) {
+            $screen->setInitialized(true);
+        }
+
+        OSRadiatorService::logDebug('Screen render: ' . $render);
+
+        $cmdBacklog->execCmd(['message' => $render]);
+
+        return true;
     }
 }

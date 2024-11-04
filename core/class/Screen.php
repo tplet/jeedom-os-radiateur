@@ -19,6 +19,12 @@ class Screen
     protected int $selectedIndex = 0;
 
     /**
+     * Flag to indicate if screen is initialized
+     * @var bool
+     */
+    protected bool $initialized = false;
+
+    /**
      * Current selected screen component
      *
      * @var ScreenComponent|null
@@ -98,7 +104,7 @@ class Screen
     /**
      * Get screen components
      *
-     * @return array
+     * @return ScreenComponent[]
      */
     public function getScreenComponents(): array
     {
@@ -177,5 +183,21 @@ class Screen
     public function setOn(bool $on): void
     {
         $this->on = $on;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isInitialized(): bool
+    {
+        return $this->initialized;
+    }
+
+    /**
+     * @param bool $initialized
+     */
+    public function setInitialized(bool $initialized): void
+    {
+        $this->initialized = $initialized;
     }
 }

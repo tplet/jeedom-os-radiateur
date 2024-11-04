@@ -2,7 +2,7 @@
 
 require_once __DIR__ . '/OSRadiator.class.php';
 require_once __DIR__ . '/OSRadiatorCmd.php';
-
+require_once __DIR__ . '/TasmotaDisplayService.php';
 
 class OSRadiatorService
 {
@@ -18,40 +18,6 @@ class OSRadiatorService
     const KEY_BUTTON_LEFT = 'buttonLeft';
     const KEY_BUTTON_RIGHT = 'buttonRight';
     const KEY_BUTTON_CLICK = 'buttonClick';
-
-    /**
-     * Generate default commands for eqLogic
-     *
-     * @param OSRadiator $eqLogic
-     * @return bool
-     * @deprecated Use eqLogicAttr configuration instead
-     */
-    static public function generateDefaultCommands(OSRadiator $eqLogic): bool
-    {
-        return false;
-
-        // Deprecated
-
-        self::logDebug('Generate default commands for device "' . $eqLogic->getName() . '" (' . $eqLogic->getLogicalId() . ')');
-
-        // Generate all default commands
-        foreach (self::getConfig() as $key => $config) {
-            $cmd = self::generateOSRadiatorCmd(
-                $eqLogic,
-                $key,
-                $config['name'],
-                $config['type'] ?? 'info',
-                $config['subtype'],
-                $config['unit'] ?? ''
-            );
-
-            self::logInfo('Create default info command "' . $cmd->getName() . '"');
-
-            $cmd->save();
-        }
-
-        return true;
-    }
 
     /**
      * Get all key configuration to listen
@@ -120,35 +86,102 @@ class OSRadiatorService
     }
 
     /**
-     * @param OSRadiator $eqLogic
-     * @param string $logicalId
-     * @param string $name
-     * @param string $type
-     * @param string $subtype
-     * @param string $unit
-     * @return OSRadiatorCmd
-     * @deprecated Use eqLogicAttr configuration instead
+     * Get heat mode code from statut
+     *
+     * @param string $statut
+     * @return string
      */
-    static protected function generateOSRadiatorCmd(
-        OSRadiator $eqLogic,
-        string $logicalId,
-        string $name,
-        string $type = 'info',
-        string $subtype = '',
-        string $unit = ''
-    ): OSRadiatorCmd
+    static public function getHeatBrutCode(string $statut): string
     {
-        $cmd = new OSRadiatorCmd();
-        $cmd->setLogicalId($logicalId);
-        $cmd->setEqLogic_id($eqLogic->getId());
-        $cmd->setName($name);
-        $cmd->setType($type);
-        $cmd->setIsVisible(1);
-        $cmd->setIsHistorized(0);
-        $cmd->setSubType($subtype);
-        $cmd->setUnite($unit);
+        $lib = [
+            10 => 'Cnf',
+            20 => 'Eco',
+            30 => 'H-G',
+            40 => 'Off',
+            50 => 'C-1',
+            60 => 'C-2',
+        ];
 
-        return $cmd;
+        return $lib[$statut] ?? '?';
+    }
+
+    /**
+     * Provide new screen with content from OSRadiator
+     *
+     * @param OSRadiator $eqLogic
+     * @return Screen
+     */
+    static public function provideScreen(OSRadiator $eqLogic): Screen
+    {
+        $screen = new Screen();
+        $screen->setOn($eqLogic->isScreenOn());
+        $screen->setSelectedIndex($eqLogic->getScreenSelectionIndex());
+
+        $screenSize = ['width' => 128, 'height' => 32];
+        $hasSubMode = $eqLogic->hasSubMode();
+
+        /*
+         * Components
+         */
+        // Temperature/Consigne
+        $cTemperature = new ScreenComponent(51, $screenSize['height']/2 - 8, 15);
+        $cTemperature->addScreenText($eqLogic->getScreenTextTemperature());
+        $cTemperature->addScreenText(new ScreenText(false, false, '/'));
+        $cTemperature->addScreenText($eqLogic->getScreenTextTarget());
+        $screen->addScreenComponent($cTemperature);
+        // Heat mode
+        $cHeatMode = new ScreenComponent(0, $screenSize['height']/2 - ($hasSubMode ? 8 : 4), 8);
+        $cHeatMode->addScreenText($eqLogic->getScreenTextHeatMode());
+        $screen->addScreenComponent($cHeatMode);
+        // Heat Sub mode
+        if ($hasSubMode) {
+            $cHeatSubMode = new ScreenComponent(0, $screenSize['height']/2, 8);
+            $cHeatSubMode->addScreenText($eqLogic->getScreenTextHeatSubMode());
+            $screen->addScreenComponent($cHeatSubMode);
+        }
+        // Heat brut
+        $cHeatBrut = new ScreenComponent(51, $screenSize['height']/2, 15);
+        $cHeatBrut->addScreenText($eqLogic->getScreenTextHeatBrut());
+        $screen->addScreenComponent($cHeatBrut);
+
+        return $screen;
+    }
+
+    /**
+     * Populate screen content with text
+     *
+     * @param OSRadiator $eqLogic
+     * @return void
+     */
+    static public function populateScreenContent(OSRadiator $eqLogic): void
+    {
+        /*
+         * Values
+         */
+        $heatMode = $eqLogic->getConfigurationCmdValue(self::KEY_MODE);
+        $heatSubMode = $eqLogic->getConfigurationCmdValue(self::KEY_SUB_MODE);
+        $temperature = $eqLogic->getConfigurationCmdValue(self::KEY_TEMPERATURE);
+        $consigne = $eqLogic->getConfigurationCmdValue(self::KEY_CONSIGNE);
+        $heatBrut = $eqLogic->getConfigurationCmdValue(self::KEY_STATE);
+        $heatOnOff = $eqLogic->getConfigurationCmdValue(self::KEY_ON_OFF);
+
+        /*
+         * Rules
+         */
+        if (strtolower($heatMode) == 'manuel' && strtolower($heatOnOff) == 'off') {
+            $consigne = 'Off';
+        }
+
+        /*
+         * Apply text
+         */
+        $eqLogic->getScreenTextHeatMode()->setText($heatMode);
+        if ($eqLogic->hasSubMode()) {
+            $eqLogic->getScreenTextHeatSubMode()->setText($heatSubMode);
+        }
+        $eqLogic->getScreenTextTemperature()->setText($temperature . '°C');
+        $eqLogic->getScreenTextTarget()->setText($consigne . (strtolower($consigne) == 'off' ? '' : '°C'));
+        $eqLogic->getScreenTextHeatBrut()->setText(self::getHeatBrutCode($heatBrut));
     }
 
     /**
@@ -159,10 +192,123 @@ class OSRadiatorService
      */
     static public function dispatchCmdListened(array $options = []): void
     {
-        $osRadiatorTarget = OSRadiator::byId($options['eqLogicTargetId']);
+        /** @var OSRadiator $eqLogic */
+        $eqLogic = OSRadiator::byId($options['eqLogicTargetId']);
         $cmdUpdated = cmd::byId($options['event_id']);
+        /** @var Screen $screen */
+        $screen = $eqLogic->getScreen();
 
-        self::logInfo('Cmd ' . $cmdUpdated->getHumanName() . ' updated. Refresh radiator screen ' . $osRadiatorTarget->getHumanName());
+        self::logInfo('Cmd ' . $cmdUpdated->getHumanName() . ' updated. Refresh radiator screen ' . $eqLogic->getHumanName());
+
+        /*
+         * Actions (from joystick)
+         */
+        $isCmdUpdatedIsButton = in_array($cmdUpdated->getId(), [
+            $eqLogic->getConfigurationCmd(self::KEY_BUTTON_UP)->getId(),
+            $eqLogic->getConfigurationCmd(self::KEY_BUTTON_DOWN)->getId(),
+            $eqLogic->getConfigurationCmd(self::KEY_BUTTON_LEFT)->getId(),
+            $eqLogic->getConfigurationCmd(self::KEY_BUTTON_RIGHT)->getId(),
+            $eqLogic->getConfigurationCmd(self::KEY_BUTTON_CLICK)->getId(),
+        ]);
+
+        // If is button, enable screen
+        if ($isCmdUpdatedIsButton) {
+            $eqLogic->setScreenOn(true);
+            self::logInfo("Button detected, enable screen for eqLogic " . $eqLogic->getHumanName());
+        }
+
+        // Change selection
+        if ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_UP)->getId()) {
+
+        }
+        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_DOWN)->getId()) {
+
+        }
+        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_LEFT)->getId()) {
+            $screen->selectPrev();
+            $eqLogic->setScreenSelectionIndex($screen->getSelectedIndex());
+        }
+        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_RIGHT)->getId()) {
+            $screen->selectNext();
+            $eqLogic->setScreenSelectionIndex($screen->getSelectedIndex());
+        }
+        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_CLICK)->getId()) {
+
+        }
+
+
+
+        // Finally, refresh screen
+        self::refreshScreen($eqLogic);
+    }
+
+    /**
+     * Subscribe listener from all configuration cmd to listen
+     *
+     * @param OSRadiator $eqLogic
+     * @return void
+     */
+    public static function subscribeListenerFromConfiguration(OSRadiator $eqLogic): void
+    {
+        $listenerClass = 'OSRadiator';
+        $listenerFunction = 'dispatchCmdListened';
+
+        $listenerOptions = [
+            'type' => 'update',
+            'eqLogicTargetId' => $eqLogic->getId(),
+        ];
+
+        // Retrieve listener and create if not exists yet
+        $listener = listener::byClassAndFunction($listenerClass, $listenerFunction, $listenerOptions);
+        if (!is_object($listener)) {
+            $listener = new listener();
+            $listener->setClass($listenerClass);
+            $listener->setFunction($listenerFunction);
+            $listener->setOption($listenerOptions);
+        }
+        // Clear event top listener
+        $listener->emptyEvent();
+
+        // For each configuration commands
+        foreach (OSRadiatorService::getKeyConfigToListen() as $key) {
+            $cmd = $eqLogic->getConfigurationCmd($key, true);
+            if (!$cmd) {
+                OSRadiatorService::logDebug('Cmd not found for eqLogic ' . $eqLogic->getHumanName() . ' and key "' . $key . '"');
+                continue;
+            }
+
+            // Add event to listener
+            $listener->addEvent($cmd->getId());
+
+            // Log
+            OSRadiatorService::logInfo('Subscribe listener for eqLogic ' . $eqLogic->getHumanName() . ', key "' . $key . '" and cmd ' . $cmd->getHumanName());
+        }
+
+        $listener->save();
+    }
+
+
+    /**
+     * Refresh screen
+     *
+     * @param OSRadiator $eqLogic
+     * @return bool
+     */
+    public static function refreshScreen(OSRadiator $eqLogic): bool
+    {
+        $cmdBacklog = $eqLogic->getConfigurationCmd(OSRadiatorService::KEY_BACKLOG);
+        if (!$cmdBacklog) {
+            self::logError("Backlog cmd not found for eqLogic " . $eqLogic->getHumanName());
+            return false;
+        }
+
+        // Update content
+        $screen = $eqLogic->getScreen();
+        self::populateScreenContent($eqLogic);
+
+        self::logInfo("Do refresh screen for eqLogic " . $eqLogic->getHumanName());
+
+        return TasmotaDisplayService::refresh($screen, $cmdBacklog);
     }
 
     static public function logDebug($message)

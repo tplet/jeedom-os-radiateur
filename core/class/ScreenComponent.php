@@ -15,10 +15,18 @@ class ScreenComponent
     protected int $x = 0;
     protected int $y = 0;
 
-    public function __construct(int $x = 0, int $y = 0)
+    /**
+     * Pad to write text and center (number of char)
+
+     * @var int
+     */
+    protected int $pad = 0;
+
+    public function __construct(int $x = 0, int $y = 0, int $pad = 0)
     {
         $this->x = $x;
         $this->y = $y;
+        $this->pad = $pad;
     }
 
     /**
@@ -68,5 +76,20 @@ class ScreenComponent
     public function setY(int $y): void
     {
         $this->y = $y;
+    }
+
+    public function getPad(): int
+    {
+        return $this->pad;
+    }
+
+    public function setPad(int $pad): void
+    {
+        $this->pad = $pad;
+    }
+
+    public function hasPad(): bool
+    {
+        return $this->pad > 0;
     }
 }
