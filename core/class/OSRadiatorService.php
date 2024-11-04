@@ -205,7 +205,7 @@ class OSRadiatorService
         /** @var Screen $screen */
         $screen = $eqLogic->getScreen();
 
-        self::logInfo($eqLogic->getHumanName() . ': Cmd ' . $cmdUpdated->getHumanName() . ' updated, refresh radiator screen.');
+        self::logInfo($eqLogic->getHumanName() . ': Cmd ' . $cmdUpdated->getHumanName() . ' triggered.');
 
         /*
          * Actions (from joystick)
@@ -219,17 +219,17 @@ class OSRadiatorService
         ]);
 
         // If is button, enable screen
-        if ($isCmdUpdatedIsButton) {
+        if ($isCmdUpdatedIsButton && !$eqLogic->isScreenOn()) {
             $eqLogic->setScreenOn(true);
-            self::logInfo($eqLogic->getHumanName() . ": button detected, enable screen for eqLogic.");
+            self::logInfo($eqLogic->getHumanName() . ": button detected, (re)enable screen for eqLogic.");
         }
 
         // Change selection
         if ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_UP)->getId()) {
-
+            self::proxyToIterate($eqLogic, $cmdUpdated, 1);
         }
         elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_DOWN)->getId()) {
-
+            self::proxyToIterate($eqLogic, $cmdUpdated, -1);
         }
         elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_LEFT)->getId()) {
             $screen->selectPrev();
@@ -245,6 +245,31 @@ class OSRadiatorService
 
         // Finally, refresh screen
         self::refreshScreen($eqLogic);
+    }
+
+    public static function proxyToIterate(OSRadiator $eqLogic, cmd $cmdUpdated, int $delta = 1): void
+    {
+        $screen = $eqLogic->getScreen();
+        $currentScreenText = $screen->getCurrentScreenText();
+
+        switch ($currentScreenText) {
+            case $eqLogic->getScreenTextTarget() :
+                self::applyChangeTarget($eqLogic, $delta);
+                break;
+        }
+    }
+
+    protected static function applyChangeTarget(OSRadiator $eqLogic, int $delta): void
+    {
+        $cmdConsigne = $eqLogic->getConfigurationCmd(self::KEY_CONSIGNE);
+        $cmdThermostat = $eqLogic->getConfigurationCmd(self::KEY_THERMOSTAT);
+
+        $consignePrevious = $cmdConsigne->execCmd();
+        $thermostatPrevious = $cmdThermostat->getLastValue();
+
+        $cmdThermostat->execCmd(['slider' => $thermostatPrevious + $delta]);
+
+        self::logInfo($eqLogic->getHumanName() . ': apply change target. Old: ' . $consignePrevious  . ', New: ' . $cmdConsigne->execCmd());
     }
 
     /**
@@ -309,8 +334,6 @@ class OSRadiatorService
         // Update content
         $screen = $eqLogic->getScreen();
         self::populateScreenContent($eqLogic);
-
-        self::logInfo($eqLogic->getHumanName() . ': do refresh screen.');
 
         return TasmotaDisplayService::refresh($screen, $cmdBacklog);
     }
