@@ -225,22 +225,29 @@ class OSRadiatorService
         }
 
         // Change selection
-        if ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_UP)->getId()) {
-            self::proxyToIterate($eqLogic, $cmdUpdated, 1);
-        }
-        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_DOWN)->getId()) {
-            self::proxyToIterate($eqLogic, $cmdUpdated, -1);
-        }
-        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_LEFT)->getId()) {
-            $screen->selectPrev();
-            $eqLogic->setScreenSelectionIndex($screen->getSelectedIndex());
-        }
-        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_RIGHT)->getId()) {
-            $screen->selectNext();
-            $eqLogic->setScreenSelectionIndex($screen->getSelectedIndex());
-        }
-        elseif ($cmdUpdated->getId() === $eqLogic->getConfigurationCmd(self::KEY_BUTTON_CLICK)->getId()) {
-
+        switch ($cmdUpdated->getId()) {
+            // UP
+            case $eqLogic->getConfigurationCmd(self::KEY_BUTTON_UP)->getId():
+                self::proxyToIterate($eqLogic, $cmdUpdated, 1);
+                break;
+            // DOWN
+            case $eqLogic->getConfigurationCmd(self::KEY_BUTTON_DOWN)->getId():
+                self::proxyToIterate($eqLogic, $cmdUpdated, -1);
+                break;
+            // LEFT
+            case $eqLogic->getConfigurationCmd(self::KEY_BUTTON_LEFT)->getId():
+                $screen->selectPrev();
+                $eqLogic->setScreenSelectionIndex($screen->getSelectedIndex());
+                break;
+            // RIGHT
+            case $eqLogic->getConfigurationCmd(self::KEY_BUTTON_RIGHT)->getId():
+                $screen->selectNext();
+                $eqLogic->setScreenSelectionIndex($screen->getSelectedIndex());
+                break;
+            // CLICK
+            case $eqLogic->getConfigurationCmd(self::KEY_BUTTON_CLICK)->getId():
+                // Add your code here if needed
+                break;
         }
 
         // Finally, refresh screen
@@ -253,12 +260,28 @@ class OSRadiatorService
         $currentScreenText = $screen->getCurrentScreenText();
 
         switch ($currentScreenText) {
+            // Target temperature
             case $eqLogic->getScreenTextTarget() :
                 self::applyChangeTarget($eqLogic, $delta);
+                break;
+            // Heat mode
+            case $eqLogic->getScreenTextHeatMode() :
+                self::applyChangeItem($eqLogic, self::KEY_MODE, $delta);
+                break;
+            // Sub mode
+            case $eqLogic->getScreenTextHeatSubMode() :
+                self::applyChangeItem($eqLogic, self::KEY_SUB_MODE, $delta);
                 break;
         }
     }
 
+    /**
+     * Increase or Decrease target temperature
+     *
+     * @param OSRadiator $eqLogic
+     * @param int $delta
+     * @return void
+     */
     protected static function applyChangeTarget(OSRadiator $eqLogic, int $delta): void
     {
         $cmdConsigne = $eqLogic->getConfigurationCmd(self::KEY_CONSIGNE);
@@ -270,6 +293,59 @@ class OSRadiatorService
         $cmdThermostat->execCmd(['slider' => $thermostatPrevious + $delta]);
 
         self::logInfo($eqLogic->getHumanName() . ': apply change target. Old: ' . $consignePrevious  . ', New: ' . $cmdConsigne->execCmd());
+    }
+
+    /**
+     * Change item from action list associated to cmd key
+     *
+     * @param OSRadiator $eqLogic
+     * @param string $key
+     * @param int $delta
+     * @return void
+     */
+    protected static function applyChangeItem(OSRadiator $eqLogic, string $key, int $delta): void
+    {
+        $cmd = $eqLogic->getConfigurationCmd($key);
+        $cmdValue = $cmd->execCmd();
+        $cmdActionList = self::getCmdActionListFromCmdTarget($cmd);
+
+        // Retrieve current index
+        $currentIndex = 0;
+        foreach ($cmdActionList as $index => $cmdAction) {
+            if ($cmdAction->getConfiguration('value') == $cmdValue) {
+                $currentIndex = $index;
+                break;
+            }
+        }
+
+        // New index
+        $currentIndex = ($currentIndex + $delta + count($cmdActionList)) % count($cmdActionList);
+
+        // Apply new item
+        $cmdActionList[$currentIndex]->execCmd();
+
+        self::logInfo($eqLogic->getHumanName() . ': apply change ' . $key . '. Old: ' . $cmdValue  . ', New: ' . $cmd->execCmd());
+    }
+
+    /**
+     * Get all cmd action from eqLogic parent of cmdTarget
+     *
+     * @param cmd $cmdTarget
+     * @return cmd[]
+     */
+    protected static function getCmdActionListFromCmdTarget(cmd $cmdTarget): array
+    {
+        $cmdList = [];
+
+        // Get all cmd action from eqLogic parent of cmdTarget
+        foreach ($cmdTarget->getEqLogic()->getCmd('action') as $cmd) {
+            // If action target is cmdTarget, keep it
+            if ($cmd->getConfiguration('infoId', null) == $cmdTarget->getId()) {
+                $cmdList[] = $cmd;
+            }
+        }
+
+        return $cmdList;
     }
 
     /**
