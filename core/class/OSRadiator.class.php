@@ -22,6 +22,7 @@ class OSRadiator extends eqLogic
     protected ?ScreenText $screenTextHeatMode = null;
     protected ?ScreenText $screenTextHeatSubMode = null;
     protected ?ScreenText $screenTextHeatBrut = null;
+    protected ?ScreenText $screenTextOnOff = null;
 
     /**
      * @var cmd[string]
@@ -174,5 +175,14 @@ class OSRadiator extends eqLogic
         }
 
         return $this->screenTextHeatBrut;
+    }
+
+    public function getScreenTextOnOff(): ?ScreenText
+    {
+        if ($this->screenTextOnOff === null) {
+            $this->screenTextOnOff = new ScreenText(true);
+        }
+
+        return $this->screenTextOnOff;
     }
 }

@@ -131,22 +131,30 @@ class OSRadiatorService
         $cHeatMode = new ScreenComponent(0, $screenSize['height']/2 - ($hasSubMode ? 8 : 4), 8);
         $cHeatMode->addScreenText($eqLogic->getScreenTextHeatMode());
         $screen->addScreenComponent($cHeatMode);
+
         // Heat Sub mode
         if ($hasSubMode) {
             $cHeatSubMode = new ScreenComponent(0, $screenSize['height']/2, 8);
             $cHeatSubMode->addScreenText($eqLogic->getScreenTextHeatSubMode());
             $screen->addScreenComponent($cHeatSubMode);
         }
+
         // Temperature/Consigne
         $cTemperature = new ScreenComponent(51, $screenSize['height']/2 - 8, 15);
         $cTemperature->addScreenText($eqLogic->getScreenTextTemperature());
         $cTemperature->addScreenText(new ScreenText(false, false, '/'));
         $cTemperature->addScreenText($eqLogic->getScreenTextTarget());
         $screen->addScreenComponent($cTemperature);
+
         // Heat brut
-        $cHeatBrut = new ScreenComponent(51, $screenSize['height']/2, 15);
+        $cHeatBrut = new ScreenComponent(70, $screenSize['height']/2, 10);
         $cHeatBrut->addScreenText($eqLogic->getScreenTextHeatBrut());
         $screen->addScreenComponent($cHeatBrut);
+
+        // On/Off
+        $cOnOff = new ScreenComponent(51, $screenSize['height']/2, 3);
+        $cOnOff->addScreenText($eqLogic->getScreenTextOnOff());
+        $screen->addScreenComponent($cOnOff);
 
         // Restore selection index
         $screen->setSelectedIndex($eqLogic->getScreenSelectionIndex());
@@ -189,6 +197,7 @@ class OSRadiatorService
         $eqLogic->getScreenTextTemperature()->setText($temperature . '°C');
         $eqLogic->getScreenTextTarget()->setText($consigne . (strtolower($consigne) == 'off' ? '' : '°C'));
         $eqLogic->getScreenTextHeatBrut()->setText(self::getHeatBrutCode($heatBrut));
+        $eqLogic->getScreenTextOnOff()->setText($heatOnOff);
     }
 
     /**
@@ -271,6 +280,10 @@ class OSRadiatorService
             // Sub mode
             case $eqLogic->getScreenTextHeatSubMode() :
                 self::applyChangeItem($eqLogic, self::KEY_SUB_MODE, $delta);
+                break;
+            // On/Off
+            case $eqLogic->getScreenTextOnOff() :
+                self::applyChangeItem($eqLogic, self::KEY_ON_OFF, $delta);
                 break;
         }
     }

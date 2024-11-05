@@ -15,6 +15,7 @@ class TasmotaDisplayService
         'ê' => '~88',
         '/' => '~2f',
         ' ' => '~20',
+        '_' => '~5f',
     ];
 
     /**
@@ -90,7 +91,7 @@ class TasmotaDisplayService
             }
 
             // Temporary: Display horizontal line
-            $displayText[] = '[x0y32h128]';
+            $displayText[] = '[x0y32B0C1h128]';
 
             // DisplayText instruction
             $message[] = 'DisplayText [O' . ($clear ? 'z' : '') . 'C1' . (!$screen->isInitialized(
